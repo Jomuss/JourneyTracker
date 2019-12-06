@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NewJourneyImage">
+        <attr name="newJourneyImage" format="string" />
+        <attr name="customViewSubtitle" format="string" />
+    </declare-styleable>
+</resources>

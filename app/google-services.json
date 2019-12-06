@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "191252263215",
+    "firebase_url": "https://thesistest-a611f.firebaseio.com",
+    "project_id": "thesistest-a611f",
+    "storage_bucket": "thesistest-a611f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191252263215:android:15e77ade7285649e7d71da",
+        "android_client_info": {
+          "package_name": "com.joemoss.firebasetest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "191252263215-orhb8pftt5bnpcvd8s9f3pr3pslhachl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joemoss.firebasetest",
+            "certificate_hash": "ee1b1ee4e0c7d259f482da2577521581a5a7e5ae"
+          }
+        },
+        {
+          "client_id": "191252263215-afj4n85eoo7lo0v0f1305llnra1uhbv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_Y2yyskRlHdVZtzLxOkW4jEpS_oBGiK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "191252263215-afj4n85eoo7lo0v0f1305llnra1uhbv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

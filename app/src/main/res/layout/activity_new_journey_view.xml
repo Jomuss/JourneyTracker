@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/new_journey_scrollview"
+    tools:context=".main.NewJourneyViewActivity">
+
+<!--    <ScrollView-->
+<!--        android:layout_width="409dp"-->
+<!--        android:layout_height="673dp"-->
+<!--        android:layout_marginTop="1dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="parent">-->
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/new_journey_nested_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/new_journey_linear_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/newJourneyTitleText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Enter a Title"
+                android:inputType="textPersonName"
+                android:textSize="24sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <EditText
+                android:id="@+id/newJourneyMainText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:background="@null"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Your Journey"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="10"
+                android:scrollbars="none" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <EditText
+                android:id="@+id/newJourneyTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Tags"
+                android:inputType="textPersonName" />
+
+        </LinearLayout>
+
+        <!--    </ScrollView>-->
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/postNewJourneyFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="27dp"
+        android:layout_marginBottom="21dp"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="@+id/new_journey_nested_view"
+        app:layout_constraintEnd_toEndOf="@+id/new_journey_nested_view"
+        app:srcCompat="@android:drawable/ic_menu_send" />
+</androidx.constraintlayout.widget.ConstraintLayout>
