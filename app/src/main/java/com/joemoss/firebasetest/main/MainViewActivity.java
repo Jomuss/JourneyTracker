@@ -74,8 +74,10 @@ public class MainViewActivity extends AppCompatActivity {
                 switch(id){
                     case R.id.sign_out_button:
                         logOut();
+                        return true;
                     case R.id.view_user_profile_button:
                         viewProfile();
+                        return true;
                     default: return true;
                 }
             }

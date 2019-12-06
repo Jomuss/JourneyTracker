@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,4 +79,6 @@ public class ProfileViewActivity extends AppCompatActivity {
         Intent editProfileIntent = new Intent(this, EditProfileViewActivity.class);
         startActivity(editProfileIntent);
     }
+    
+
 }
