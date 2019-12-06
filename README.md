@@ -7,4 +7,4 @@ The major motivaiton behind Journey Tracker is the belief that experts in anythi
 
 ## Running Journey Tracker on a PC
 
-In order to run Journey Tracker, you need to install Android Studio and set up the Android emulator. Instructions for setting up the the emulator can be found (here)[https://developer.android.com/studio/run/emulator].
+In order to run Journey Tracker, you need to install Android Studio and set up the Android emulator. Instructions for setting up the the emulator can be found [here](https://developer.android.com/studio/run/emulator).
