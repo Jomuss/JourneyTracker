@@ -4,22 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/new_journey_scrollview"
+    android:id="@+id/new_journey_constraintlayout"
     tools:context=".main.NewJourneyViewActivity">
 
-<!--    <ScrollView-->
-<!--        android:layout_width="409dp"-->
-<!--        android:layout_height="673dp"-->
-<!--        android:layout_marginTop="1dp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="parent">-->
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/new_journey_nested_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/new_journey_linear_view"

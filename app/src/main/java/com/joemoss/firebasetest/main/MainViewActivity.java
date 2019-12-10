@@ -1,5 +1,6 @@
 package com.joemoss.firebasetest.main;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -11,9 +12,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
@@ -39,6 +44,10 @@ public class MainViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+//        Slide slide = new Slide();
+//        slide.setSlideEdge(Gravity.LEFT);
+//        getWindow().setExitTransition(slide);
         setContentView(R.layout.activity_main_view);
 
 //        curUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -100,8 +109,8 @@ public class MainViewActivity extends AppCompatActivity {
         //If there was a change in the users data, reload the username and profile picture
         if(CurrentUser.getInstance().getProfileDataChangedValue()) {
             TextView username = findViewById(R.id.drawerUsernameText);
-            username.setText(CurrentUser.getInstance().currentUser.getDisplayName());
-            StorageReference profPicRef = storage.getReference("/users/" + CurrentUser.getInstance().currentUser.getUid() + "/profilePic.jpg");
+            username.setText(fAuth.getCurrentUser().getDisplayName());
+            StorageReference profPicRef = storage.getReference("/users/" + fAuth.getCurrentUser().getUid() + "/profilePic.jpg");
             ImageView drawerPic = (ImageView) findViewById(R.id.drawerProfilePic);
             try {
                 GlideApp.with(this)
@@ -122,8 +131,8 @@ public class MainViewActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         TextView username = findViewById(R.id.drawerUsernameText);
-        username.setText(CurrentUser.getInstance().currentUser.getDisplayName());
-        StorageReference profPicRef = storage.getReference("/users/"+CurrentUser.getInstance().currentUser.getUid()+"/profilePic.jpg");
+        username.setText(fAuth.getCurrentUser().getDisplayName());
+        StorageReference profPicRef = storage.getReference("/users/"+fAuth.getCurrentUser().getUid()+"/profilePic.jpg");
         ImageView drawerPic = (ImageView) findViewById(R.id.drawerProfilePic);
         try{
             GlideApp.with(this)
@@ -153,6 +162,7 @@ public class MainViewActivity extends AppCompatActivity {
     private void viewProfile(){
         Intent profIntent = new Intent(this, ProfileViewActivity.class);
         startActivity(profIntent);
+//        overridePendingTransition();
     }
 
 

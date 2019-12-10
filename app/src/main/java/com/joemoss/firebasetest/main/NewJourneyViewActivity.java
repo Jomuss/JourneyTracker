@@ -68,7 +68,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
     private EditText newJourneyTitle;
     private EditText newJourneyTags;
     private View newJourneyImageView;
-    private FirebaseAuth auth;
+    private FirebaseAuth fAuth;
     private FirebaseStorage storage;
     private FirebaseFirestore firestore;
     private JourneyModel newJourney;
@@ -82,10 +82,11 @@ public class NewJourneyViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_journey_view);
 
         storage = FirebaseStorage.getInstance();
-        auth = FirebaseAuth.getInstance();
+        fAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         imageCounter = 1;
         newJourneyImages = new ArrayList<>();
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Journey");
@@ -145,15 +146,15 @@ public class NewJourneyViewActivity extends AppCompatActivity {
 
     //Initialize new Journey model and upload to the Firestore Database. On Success, update the User's document with the post ID
     private void uploadJourney(){
-        FirebaseUser curUser = CurrentUser.getInstance().currentUser;
-        final String uid = curUser.getUid();
+
+        final String uid = fAuth.getCurrentUser().getUid();
        // newJourneyImages.add(new JourneyImageModel("users/posts/"))
         EditText imageText = newJourneyImageView.findViewById(R.id.new_journey_image_text);
         EditText imageTitle = newJourneyImageView.findViewById(R.id.new_journey_image_title);
         JourneyImageModel jIModel = new JourneyImageModel("", imageText.getText().toString(),imageTitle.getText().toString());
         newJourneyImages.add(jIModel);
 
-        newJourney = new JourneyModel(newJourneyTitle.getText().toString(), uid, curUser.getDisplayName(),
+        newJourney = new JourneyModel(newJourneyTitle.getText().toString(), uid, fAuth.getCurrentUser().getDisplayName(),
                 "users/"+uid+"/profilePic.jpg", newJourneyMainText.getText().toString(),
                 "", "", newJourneyTags.getText().toString(), newJourneyImages);
 
@@ -161,9 +162,6 @@ public class NewJourneyViewActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-//                        newJourney.getJourneyImages().get(0).setPictureRef("users/"+uid+"/posts/"+documentReference.getId()+"image"+(imageCounter)+".jpg");
-//                        firestore.collection("posts").document(documentReference.getId())
-//                        .set(newJourney);
                         updateUserDocument(documentReference.getId());
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -176,21 +174,21 @@ public class NewJourneyViewActivity extends AppCompatActivity {
     }
 
     //Update the "posts" array of the userdocument with the ID of the new Post
-    private void updateUserDocument(final String docRef){
-        String uid = CurrentUser.getInstance().currentUser.getUid();
+    private void updateUserDocument(final String journeyDocRef){
+        String uid = fAuth.getCurrentUser().getUid();
         WriteBatch batch = firestore.batch();
 
         DocumentReference userRef =  firestore.collection("users").document(uid);
-        batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+docRef));
+        batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
 
-        newJourney.getJourneyImages().get(0).setPictureRef("users/"+uid+"/posts/"+docRef+"image"+(imageCounter)+".jpg");
-        DocumentReference postRef = firestore.collection("posts").document(docRef);
+        newJourney.getJourneyImages().get(0).setPictureRef("users/"+uid+"/posts/"+journeyDocRef+"image"+(imageCounter)+".jpg");
+        DocumentReference postRef = firestore.collection("posts").document(journeyDocRef);
         batch.update(postRef, "journeyImages", newJourney.getJourneyImages());
 
         batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                uploadJourneyImages(docRef);
+                uploadJourneyImages(journeyDocRef);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -216,7 +214,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
     }
 
     private void uploadJourneyImages(final String docRef){
-        StorageReference storageRef = storage.getReference().child("users/"+CurrentUser.getInstance().currentUser.getUid()+"/posts/"+docRef+"/image/"+imageCounter+".jpg");
+        StorageReference storageRef = storage.getReference().child("users/"+fAuth.getCurrentUser().getUid()+"/posts/"+docRef+"/image/"+imageCounter+".jpg");
 
         Bitmap takenImage = BitmapFactory.decodeFile(newJourneyImageFile.getAbsolutePath());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -316,31 +314,4 @@ public class NewJourneyViewActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadPhoto(Bitmap profPic){
-        //Get reference to logged in users UID
-        String uid = CurrentUser.getInstance().currentUser.getUid();
-
-        //Create Firebase Storage References
-        StorageReference storageRef = storage.getReference();
-        StorageReference profPicRef = storageRef.child("users/"+uid+"/profilePic.jpg");
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        profPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = profPicRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(NewJourneyViewActivity.this, "Your profile picture could not be uploaded", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-            }
-        });
-    }
 }

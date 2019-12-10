@@ -11,21 +11,33 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.joemoss.firebasetest.GlideApp;
 import com.joemoss.firebasetest.Models.CurrentUser;
 import com.joemoss.firebasetest.R;
 
@@ -39,21 +51,38 @@ public class EditProfileViewActivity extends AppCompatActivity {
     private File profPicFile;
     FirebaseStorage storage;
     FirebaseFirestore firestore;
+    FirebaseAuth fauth;
     ImageView editProfPicView;
+    EditText bioText;
+    Bitmap profPic = null;
+    boolean dataChange = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        getWindow().setEnterTransition(new Slide());
         setContentView(R.layout.activity_edit_profile_view);
 
-        storage = FirebaseStorage.getInstance();
-        firestore = FirebaseFirestore.getInstance();
-        editProfPicView = findViewById(R.id.edit_profile_picture);
-
+//        storage = FirebaseStorage.getInstance();
+//        firestore = FirebaseFirestore.getInstance();
+//        fauth = FirebaseAuth.getInstance();
+//        editProfPicView = findViewById(R.id.edit_profile_picture);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ImageView editProfPicView = findViewById(R.id.edit_profile_picture);
+        StorageReference profPicRef = storage.getReference("/users/"+fauth.getCurrentUser().getUid()+"/profilePic.jpg");
+        try{
+            GlideApp.with(this)
+                    .load(profPicRef)
+                    .circleCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(editProfPicView);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
         editProfPicView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -61,8 +90,47 @@ public class EditProfileViewActivity extends AppCompatActivity {
             }
         });
 
+        TextView username = findViewById(R.id.edit_profile_username);
+        username.setText(fauth.getCurrentUser().getDisplayName());
+
+        bioText = findViewById(R.id.edit_profile_bio);
+        DocumentReference userDocRef = firestore.collection("users").document(fauth.getCurrentUser().getUid());
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                bioText.setText(snapshot.get("bio").toString());
+            }
+        });
+        bioText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                dataChange = true;
+            }
+        });
 
 
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.edit_profile_menu, menu);
+
+        return true;
     }
 
     @Override
@@ -73,14 +141,15 @@ public class EditProfileViewActivity extends AppCompatActivity {
 
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(profPicFile.getAbsolutePath());
-                // RESIZE BITMAP, see section below
                 // Load the taken image into a preview
                 ImageView editProfPic = (ImageView) findViewById(R.id.edit_profile_picture);
                 Glide.with(getApplicationContext())
                         .load(takenImage)
                         .circleCrop()
                         .into(editProfPicView);
-                uploadPhoto(takenImage);
+                //updateProfile(takenImage);
+                profPic = takenImage;
+                dataChange = true;
 
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
@@ -90,20 +159,14 @@ public class EditProfileViewActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.submit_profile_changes_button) {
+            if(dataChange) {
+                updateProfile();
+            }
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem menuItem) {
-//        if (menuItem.getItemId() == android.R.id.home) {
-//            if(CurrentUser.getInstance().getProfileDataChangedValue()) {
-//                setResult(RESULT_OK);
-//                this.finish();
-//            }
-//        }
-//        return super.onOptionsItemSelected(menuItem);
-//    }
 
     private File getPhotoFileUri(String fileName) {
         // Get safe storage directory for photos
@@ -142,9 +205,23 @@ public class EditProfileViewActivity extends AppCompatActivity {
         }
     }
 
+    private void updateProfile(){
+        if(!dataChange){
+
+        }else {
+            DocumentReference docRef = firestore.collection("users").document(fauth.getCurrentUser().getUid());
+            docRef.update("bio", bioText.getText().toString());
+            if(profPic != null) {
+                uploadPhoto(profPic);
+            }else{
+                EditProfileViewActivity.this.finish();
+            }
+        }
+    }
+
     private void uploadPhoto(Bitmap profPic){
         //Get reference to logged in users UID
-        String uid = CurrentUser.getInstance().currentUser.getUid();
+        String uid = fauth.getCurrentUser().getUid();
 
         //Create Firebase Storage References
         StorageReference storageRef = storage.getReference();
@@ -164,7 +241,7 @@ public class EditProfileViewActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
+                EditProfileViewActivity.this.finish();
             }
         });
     }
