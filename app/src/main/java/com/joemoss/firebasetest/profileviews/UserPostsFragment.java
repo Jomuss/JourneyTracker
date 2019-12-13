@@ -11,10 +11,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
@@ -34,16 +37,13 @@ public class UserPostsFragment extends Fragment {
     FirebaseFirestore firestore;
     FirebaseAuth fAuth;
     Context context;
+    Query query;
 
 
     public UserPostsFragment(Context context){
         this.context = context;
     }
-
-
-
-
-
+        View frag;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,9 +51,31 @@ public class UserPostsFragment extends Fragment {
         // Inflate the layout for this fragment
         firestore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
-        View v = inflater.inflate(R.layout.fragment_user_posts, container, false);
-        intializeRecyclerView(v);
-        return v;
+        frag = inflater.inflate(R.layout.fragment_user_posts, container, false);
+
+        postsRecyclerView = frag.findViewById(R.id.user_posts_recycler_view);
+        layoutManager = new LinearLayoutManager(getActivity().getBaseContext());
+        postsRecyclerView.setLayoutManager(layoutManager);
+
+        final CollectionReference postsRef = firestore.collection("posts");
+        query = postsRef.whereEqualTo("authorUID", fAuth.getCurrentUser().getUid());
+
+        FirestoreRecyclerOptions<JourneyModel> options = new FirestoreRecyclerOptions.Builder<JourneyModel>()
+                .setQuery(query, JourneyModel.class)
+                .build();
+
+        postsAdapter = new PostsRecyclerViewAdapter(context, options);
+        postsRecyclerView.setAdapter(postsAdapter);
+
+//        intializeRecyclerView(v);
+        return frag;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        postsAdapter.startListening();
     }
 
     private void intializeRecyclerView(final View v){
@@ -66,13 +88,10 @@ public class UserPostsFragment extends Fragment {
                         for (DocumentSnapshot snapshot: queryDocumentSnapshots) {
                             journeys.add(snapshot.toObject(JourneyModel.class));
                         }
-                        postsRecyclerView = v.findViewById(R.id.user_posts_recycler_view);
-                        postsAdapter = new PostsRecyclerViewAdapter(context, journeys);
-                        layoutManager = new LinearLayoutManager(getActivity());
-                        postsRecyclerView.setLayoutManager(layoutManager);
-                        postsRecyclerView.setAdapter(postsAdapter);
                     }
                 });
+
+
 
     }
 

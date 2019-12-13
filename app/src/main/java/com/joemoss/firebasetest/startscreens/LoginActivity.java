@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.email_login_field);
         password = findViewById(R.id.password_login_field);
         loginButton = findViewById(R.id.login_button);
+        getSupportActionBar().setTitle("Journey Tracker");
 
         loginButton.setOnClickListener(new View.OnClickListener(){
             @Override

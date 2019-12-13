@@ -47,6 +47,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             finish();
 
         }
+        getSupportActionBar().setTitle("Journey Tracker");
 
 
     }

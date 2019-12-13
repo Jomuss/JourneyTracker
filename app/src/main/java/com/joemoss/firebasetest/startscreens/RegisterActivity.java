@@ -55,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         userPasswordConfirm = findViewById(R.id.password_confirm_field);
         username = findViewById(R.id.username_register_field);
         registerButton = findViewById(R.id.register_button);
+        getSupportActionBar().setTitle("Journey Tracker");
 
         db = FirebaseFirestore.getInstance();
 

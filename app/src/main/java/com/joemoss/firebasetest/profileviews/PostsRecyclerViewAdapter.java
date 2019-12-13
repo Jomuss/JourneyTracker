@@ -1,5 +1,6 @@
 package com.joemoss.firebasetest.profileviews;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -13,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.joemoss.firebasetest.GlideApp;
@@ -21,13 +25,17 @@ import com.joemoss.firebasetest.R;
 
 import java.util.List;
 
-public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecyclerViewAdapter.MyViewHolder> {
+public class PostsRecyclerViewAdapter extends FirestoreRecyclerAdapter<JourneyModel, PostsRecyclerViewAdapter.MyViewHolder> {
+//        RecyclerView.Adapter<PostsRecyclerViewAdapter.MyViewHolder> {
     Context context;
-    List<JourneyModel> journeys;
+    FirestoreRecyclerOptions<JourneyModel> journeys;
     FirebaseStorage storage;
+    private Query query;
+//    private FirestoreRecyclerAdapter
 
 
-    PostsRecyclerViewAdapter(Context context, List<JourneyModel> journeys){
+    PostsRecyclerViewAdapter(Context context, FirestoreRecyclerOptions<JourneyModel> journeys){
+        super(journeys);
         this.context = context;
         this.journeys = journeys;
         storage = FirebaseStorage.getInstance();
@@ -44,9 +52,10 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         return vh;
     }
 
+
+
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        JourneyModel journey = journeys.get(position);
+    protected void onBindViewHolder(@NonNull MyViewHolder holder, int i, @NonNull JourneyModel journey) {
         holder.journeyTitle.setText(journey.getTitle());
         holder.authorUsername.setText(journey.getAuthorUsername());
         StorageReference profPic = storage.getReference(journey.getAuthorProfPicRef());
@@ -58,9 +67,11 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                 .into(holder.authorProfPic);
     }
 
+
+
     @Override
     public int getItemCount() {
-        return journeys.size();
+        return journeys.getSnapshots().size();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {

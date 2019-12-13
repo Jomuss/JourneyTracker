@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -162,9 +163,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        if(newJourneyImageFile != null){
                             updateUserDocument(documentReference.getId());
-                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -175,7 +174,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
 
     }
 
-    //Update the "posts" array of the userdocument with the ID of the new Post
+    //Update the "posts" array of the userdocument with the ID of the new Post, as well as the post with the
     private void updateUserDocument(final String journeyDocRef){
         String uid = fAuth.getCurrentUser().getUid();
         WriteBatch batch = firestore.batch();
@@ -183,14 +182,21 @@ public class NewJourneyViewActivity extends AppCompatActivity {
         DocumentReference userRef =  firestore.collection("users").document(uid);
         batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
 
-        newJourney.getJourneyImages().get(0).setPictureRef("users/"+uid+"/posts/"+journeyDocRef+"/image"+(imageCounter)+".jpg");
-        DocumentReference postRef = firestore.collection("posts").document(journeyDocRef);
-        batch.update(postRef, "journeyImages", newJourney.getJourneyImages());
+        if(newJourneyImageFile != null) {
+            //Update the users post to include the future link to the images, based off of the posts documents IS
+            newJourney.getJourneyImages().get(0).setPictureRef("users/" + uid + "/posts/" + journeyDocRef + "/image" + (imageCounter) + ".jpg");
+            DocumentReference postRef = firestore.collection("posts").document(journeyDocRef);
+            batch.update(postRef, "journeyImages", newJourney.getJourneyImages());
+        }
 
         batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                uploadJourneyImages(journeyDocRef);
+                if(newJourneyImageFile != null) {
+                    uploadJourneyImages(journeyDocRef);
+                }else{
+                    NewJourneyViewActivity.this.finish();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -215,6 +221,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
 
     }
 
+    //Uploads images tied to the journey
     private void uploadJourneyImages(final String docRef){
         StorageReference storageRef = storage.getReference().child("users/"+fAuth.getCurrentUser().getUid()+"/posts/"+docRef+"/image/"+imageCounter+".jpg");
 
@@ -232,16 +239,19 @@ public class NewJourneyViewActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                updateUserJourneyEntry(docRef);
+                NewJourneyViewActivity.this.finish();
                 Toast.makeText(NewJourneyViewActivity.this, "Journey Posted!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    //Updates the Journey in firebase to contain a reference to the Images
 //    private void updateUserJourneyEntry(String docRef){
-//        JourneyImageModel jIModel = new JourneyImageModel("", newJourneyImageView.findViewById(R.id.new_journey_image_text))
+//        EditText title = newJourneyImageView.findViewById(R.id.new_journey_image_title);
+//        EditText text = newJourneyImageView.findViewById(R.id.new_journey_image_text);
+//        JourneyImageModel jIModel = new JourneyImageModel("", text.getText().toString(), title.getText().toString());
 //
-//        firestore.collection("post").document(docRef).update("journeyImages", FieldValue.arrayUnion())
+//        firestore.collection("post").document(docRef).update("journeyImages", FieldValue.arrayUnion());
 //    }
 
     //Returns the URI for the photo taken

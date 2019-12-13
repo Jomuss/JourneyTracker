@@ -80,6 +80,7 @@ public class ProfileViewActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.profile_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Profile");
 
         //Set Username TextView, User Profile Picture, and Bio
         TextView username = findViewById(R.id.profileUsername);
