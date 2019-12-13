@@ -18,6 +18,10 @@ public class JourneyModel {
     private List<JourneyImageModel> journeyImages;
     
 
+    public JourneyModel(){
+
+    }
+
     public JourneyModel(String title, String authorUID, String authorUsername, String authorProfPicRef, String mainJourneyText, String nextJourneyRef, String prevJourneyRef, String journeyTags, List<JourneyImageModel> journeyImages) {
         this.title = title;
         this.authorUID = authorUID;

@@ -162,7 +162,9 @@ public class NewJourneyViewActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        updateUserDocument(documentReference.getId());
+                        if(newJourneyImageFile != null){
+                            updateUserDocument(documentReference.getId());
+                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -181,7 +183,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
         DocumentReference userRef =  firestore.collection("users").document(uid);
         batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
 
-        newJourney.getJourneyImages().get(0).setPictureRef("users/"+uid+"/posts/"+journeyDocRef+"image"+(imageCounter)+".jpg");
+        newJourney.getJourneyImages().get(0).setPictureRef("users/"+uid+"/posts/"+journeyDocRef+"/image"+(imageCounter)+".jpg");
         DocumentReference postRef = firestore.collection("posts").document(journeyDocRef);
         batch.update(postRef, "journeyImages", newJourney.getJourneyImages());
 

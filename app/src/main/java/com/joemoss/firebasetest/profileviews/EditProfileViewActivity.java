@@ -64,10 +64,10 @@ public class EditProfileViewActivity extends AppCompatActivity {
         getWindow().setEnterTransition(new Slide());
         setContentView(R.layout.activity_edit_profile_view);
 
-//        storage = FirebaseStorage.getInstance();
-//        firestore = FirebaseFirestore.getInstance();
-//        fauth = FirebaseAuth.getInstance();
-//        editProfPicView = findViewById(R.id.edit_profile_picture);
+        storage = FirebaseStorage.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+        fauth = FirebaseAuth.getInstance();
+        editProfPicView = findViewById(R.id.edit_profile_picture);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

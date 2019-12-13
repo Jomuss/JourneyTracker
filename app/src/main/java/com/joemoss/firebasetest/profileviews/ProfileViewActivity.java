@@ -12,6 +12,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.transition.Slide;
@@ -30,13 +32,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.joemoss.firebasetest.GlideApp;
 import com.joemoss.firebasetest.Models.CurrentUser;
+import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
-import com.joemoss.firebasetest.main.MainPagerAdapter;
-import com.joemoss.firebasetest.main.MainViewActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfileViewActivity extends AppCompatActivity {
     FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -45,6 +50,10 @@ public class ProfileViewActivity extends AppCompatActivity {
     FirebaseFirestore firestore;
     TextView bioText;
     boolean bioToggled = false;
+    List<JourneyModel> journeys = new ArrayList<>();
+    private RecyclerView postsRecyclerView;
+    private PostsRecyclerViewAdapter postsAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +63,7 @@ public class ProfileViewActivity extends AppCompatActivity {
 //        slide.setSlideEdge(Gravity.RIGHT);
 //        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
 //        getWindow().setEnterTransition(slide);
-//        setContentView(R.layout.activity_profile_view);
+        setContentView(R.layout.activity_profile_view);
 
         storage = FirebaseStorage.getInstance();
         fAuth = FirebaseAuth.getInstance();
@@ -62,10 +71,10 @@ public class ProfileViewActivity extends AppCompatActivity {
 
 
         //Initialize ViewPager
-        ViewPager viewPager = findViewById(R.id.profile_view_pager);
-        viewPager.setAdapter(new ProfilePagerAdapter(getSupportFragmentManager(), ProfileViewActivity.this));
+        ViewPager userViewPager = findViewById(R.id.profile_viewpager);
+        userViewPager.setAdapter(new ProfilePagerAdapter(getSupportFragmentManager(), ProfileViewActivity.this));
         TabLayout tabs = findViewById(R.id.profile_tabs);
-        tabs.setupWithViewPager(viewPager);
+        tabs.setupWithViewPager(userViewPager);
 
         //initialize toolbar
         Toolbar toolbar = findViewById(R.id.profile_toolbar);
@@ -132,6 +141,23 @@ public class ProfileViewActivity extends AppCompatActivity {
         Intent editProfileIntent = new Intent(this, EditProfileViewActivity.class);
         startActivity(editProfileIntent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
+
+//    private void intializeRecyclerView(){
+//        firestore.collection("posts")
+//                .whereEqualTo("authorUID", fAuth.getCurrentUser().getUid())
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                        journeys = queryDocumentSnapshots.toObjects(JourneyModel.class);
+//                    }
+//                });
+//        postsRecyclerView = findViewById(R.id.user_posts_recycler_view);
+//        postsAdapter = new PostsRecyclerViewAdapter(this, journeys);
+//        layoutManager = new LinearLayoutManager(ProfileViewActivity.this);
+//        postsRecyclerView.setLayoutManager(layoutManager);
+//        postsRecyclerView.setAdapter(postsAdapter);
+//    }
 
 
 }

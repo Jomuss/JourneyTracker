@@ -5,6 +5,10 @@ public class JourneyImageModel {
     private String imageText;
     private String imageTitle;
 
+    public JourneyImageModel(){
+
+    }
+
     public JourneyImageModel(String pictureRef, String imageText, String imageTitle){
         this.pictureRef = pictureRef;
         this.imageText = imageText;

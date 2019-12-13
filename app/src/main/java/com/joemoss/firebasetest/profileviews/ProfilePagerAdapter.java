@@ -11,9 +11,12 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
 
     private static final String[] TAB_TITLES = new String[]{"Comments", "Journeys"};
     private static int NUM_ITEMS = 2;
+    Context context;
 
     public ProfilePagerAdapter(FragmentManager fm, Context context){
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        this.context = context;
+
     }
 
     @NonNull
@@ -23,7 +26,7 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new UserCommentsFragment();
             case 1:
-                return new UserPostsFragment();
+                return new UserPostsFragment(context);
             default:
                 return null;
         }
