@@ -117,8 +117,18 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         try {
                             if (task.isSuccessful()) {
-                                Toast.makeText(RegisterActivity.this, "Successfully Registered", Toast.LENGTH_SHORT).show();
-                                createFirestoreUserEntry();
+                                FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(username.getText().toString())
+                                        .build();
+                                curUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(RegisterActivity.this, "Successfully Registered", Toast.LENGTH_SHORT).show();
+                                        createFirestoreUserEntry();
+
+                                    }
+                                });
 
                             } else {
                                 Toast.makeText(RegisterActivity.this, "There was an error registering you", Toast.LENGTH_SHORT).show();
@@ -136,29 +146,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void startMainViewActivity(){
-        Intent mainViewIntent = new Intent(this, MainViewActivity.class);
-        startActivity(mainViewIntent);
-        finish();
-    }
 
-
-
-    //Updates FirebaseAuth Entry with selected username, starts Main View Activity on completion
-    private void updateFirebaseAuthEntry(){
-        FirebaseUser curUser = fAuth.getCurrentUser();
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(username.getText().toString())
-                .build();
-        curUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                startMainViewActivity();
-            }
-        });
-    }
-    
-    //create user entry in firestore, if successful move to update username in 
     private void createFirestoreUserEntry(){
         String uID = fAuth.getCurrentUser().getUid();
         Map<String, Object> userData = new HashMap<>();
@@ -170,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Log.d("addUserData", "User successfully registered and data added");
                         setResult(LOGGED_IN);
-                        updateFirebaseAuthEntry();
+                        startMainViewActivity();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -180,6 +168,30 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    //Updates FirebaseAuth Entry with selected username, starts Main View Activity on completion
+//    private void updateFirebaseAuthEntry(){
+//        FirebaseUser curUser = fAuth.getCurrentUser();
+//        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+//                .setDisplayName(username.getText().toString())
+//                .build();
+//        curUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                startMainViewActivity();
+//            }
+//        });
+//    }
+
+    private void startMainViewActivity(){
+        Intent mainViewIntent = new Intent(this, MainViewActivity.class);
+        startActivity(mainViewIntent);
+        finish();
+    }
+
+
+
+
 
 
     private boolean checkPassword(){

@@ -1,6 +1,6 @@
 package com.joemoss.firebasetest.Models;
 
-public class JourneyImageModel {
+public class JourneyImageModel{
     private String pictureRef;
     private String imageText;
     private String imageTitle;

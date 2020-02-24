@@ -2,8 +2,11 @@ package com.joemoss.firebasetest.main;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -14,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,7 +69,7 @@ public class MainViewActivity extends AppCompatActivity {
 
         //Set and Apply Toolbar
         Toolbar toolBar  = findViewById(R.id.toolbar);
-        toolBar.setTitle("Journey Tracker");
+//        toolBar.setTitle("Journey Tracker");
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -132,18 +136,28 @@ public class MainViewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu){
         TextView username = findViewById(R.id.drawerUsernameText);
         username.setText(fAuth.getCurrentUser().getDisplayName());
-        StorageReference profPicRef = storage.getReference("/users/"+fAuth.getCurrentUser().getUid()+"/profilePic.jpg");
-        ImageView drawerPic = (ImageView) findViewById(R.id.drawerProfilePic);
-        try{
-            GlideApp.with(this)
-                    .load(profPicRef)
-                    .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(drawerPic);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        final StorageReference profPicRef = storage.getReference("/users/"+fAuth.getCurrentUser().getUid()+"/profilePic.jpg");
+        profPicRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                ImageView drawerPic = (ImageView) findViewById(R.id.drawerProfilePic);
+                try{
+                    GlideApp.with(MainViewActivity.this)
+                            .load(profPicRef)
+                            .circleCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(drawerPic);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("Profile Pic", "No Profile Pic");
+            }
+        });
         return true;
     }
 
@@ -160,7 +174,9 @@ public class MainViewActivity extends AppCompatActivity {
         finish();
     }
     private void viewProfile(){
+
         Intent profIntent = new Intent(this, ProfileViewActivity.class);
+        profIntent.putExtra("UID", fAuth.getCurrentUser().getUid());
         startActivity(profIntent);
 //        overridePendingTransition();
     }

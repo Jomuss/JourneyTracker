@@ -1,42 +1,74 @@
 package com.joemoss.firebasetest.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
+import com.joemoss.firebasetest.adapters.PostsRecyclerViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PopularFragment extends Fragment {
-    private String title;
-    private int page;
-    public static final String ARG_PAGE = "ARG_PAGE";
+    List<JourneyModel> journeys = new ArrayList<>();
+    private RecyclerView postsRecyclerView;
+    private PostsRecyclerViewAdapter postsAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    FirebaseFirestore firestore;
+    FirebaseAuth fAuth;
+    Context context;
+    Query query;
+    View frag;
 
-    public PopularFragment(){
+    public PopularFragment(Context context){this.context = context;}
 
-    }
 
-    public PopularFragment newInstance(int page, String title){
-        PopularFragment popularFragment = new PopularFragment();
-        Bundle args = new Bundle();
-        args.putInt("pageNum", page);
-        args.putString("pageTitle", title);
-        popularFragment.setArguments(args);
-        return popularFragment;
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        firestore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        frag = inflater.inflate(R.layout.fragment_popular_view, container, false);
+
+        postsRecyclerView = frag.findViewById(R.id.popular_posts_recyclerview);
+        layoutManager = new LinearLayoutManager(getActivity().getBaseContext());
+        postsRecyclerView.setLayoutManager(layoutManager);
+
+        final CollectionReference postsRef = firestore.collection("posts");
+        query = postsRef.orderBy("timestamp", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<JourneyModel> options = new FirestoreRecyclerOptions.Builder<JourneyModel>()
+                .setQuery(query, JourneyModel.class)
+                .build();
+
+        postsAdapter = new PostsRecyclerViewAdapter(context, options);
+        postsRecyclerView.setAdapter(postsAdapter);
+
+        return frag;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onStart() {
+        super.onStart();
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_popular_view, container, false);
-        return view;
+        postsAdapter.startListening();
     }
 }

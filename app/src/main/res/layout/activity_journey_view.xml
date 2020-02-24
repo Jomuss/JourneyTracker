@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@+id/journey_title" />
 
     <TextView
-        android:id="@+id/journey_author_kudos"
+        android:id="@+id/journey_kudos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/journey_author_username" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/journey_view_prof_pic"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
@@ -57,7 +57,8 @@
         android:layout_height="35dp"
         android:layout_marginStart="18dp"
         android:layout_marginTop="19dp"
+        android:inputType="textMultiLine"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/journey_author_kudos" />
+        app:layout_constraintTop_toBottomOf="@+id/journey_kudos" />
 </androidx.constraintlayout.widget.ConstraintLayout>

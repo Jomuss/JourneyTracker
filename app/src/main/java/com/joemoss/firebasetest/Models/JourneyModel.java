@@ -1,12 +1,14 @@
 package com.joemoss.firebasetest.Models;
 
-import com.google.firebase.storage.FirebaseStorage;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.util.ArrayList;
+import com.google.firebase.Timestamp;
+
 import java.util.List;
 
 
-public class JourneyModel {
+public class JourneyModel implements Parcelable {
     private String title;
     private String authorUID;
     private String authorUsername;
@@ -16,13 +18,15 @@ public class JourneyModel {
     private String prevJourneyRef;
     private String journeyTags;
     private List<JourneyImageModel> journeyImages;
+    private int journeyKudos;
+    private Timestamp timestamp;
     
 
     public JourneyModel(){
 
     }
 
-    public JourneyModel(String title, String authorUID, String authorUsername, String authorProfPicRef, String mainJourneyText, String nextJourneyRef, String prevJourneyRef, String journeyTags, List<JourneyImageModel> journeyImages) {
+    public JourneyModel(String title, String authorUID, String authorUsername, String authorProfPicRef, String mainJourneyText, String nextJourneyRef, String prevJourneyRef, String journeyTags, List<JourneyImageModel> journeyImages, int journeyKudos, Timestamp timestamp) {
         this.title = title;
         this.authorUID = authorUID;
         this.authorUsername = authorUsername;
@@ -32,7 +36,33 @@ public class JourneyModel {
         this.prevJourneyRef = prevJourneyRef;
         this.journeyTags = journeyTags;
         this.journeyImages = journeyImages;
+        this.journeyKudos = journeyKudos;
+        this.timestamp = timestamp;
     }
+
+    protected JourneyModel(Parcel in) {
+        title = in.readString();
+        authorUID = in.readString();
+        authorUsername = in.readString();
+        authorProfPicRef = in.readString();
+        mainJourneyText = in.readString();
+        nextJourneyRef = in.readString();
+        prevJourneyRef = in.readString();
+        journeyTags = in.readString();
+        journeyKudos = in.readInt();
+    }
+
+    public static final Creator<JourneyModel> CREATOR = new Creator<JourneyModel>() {
+        @Override
+        public JourneyModel createFromParcel(Parcel in) {
+            return new JourneyModel(in);
+        }
+
+        @Override
+        public JourneyModel[] newArray(int size) {
+            return new JourneyModel[size];
+        }
+    };
 
     public String getTitle() {
         return title;
@@ -104,5 +134,34 @@ public class JourneyModel {
 
     public void setJourneyImages(List<JourneyImageModel> journeyImages) {
         this.journeyImages = journeyImages;
+    }
+    public void setJourneyKudos(int journeyKudos){ this.journeyKudos = journeyKudos;}
+
+    public int getJourneyKudos(){return journeyKudos;}
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(authorUID);
+        dest.writeString(authorUsername);
+        dest.writeString(authorProfPicRef);
+        dest.writeString(mainJourneyText);
+        dest.writeString(nextJourneyRef);
+        dest.writeString(prevJourneyRef);
+        dest.writeString(journeyTags);
+        dest.writeInt(journeyKudos);
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

@@ -38,7 +38,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
                 //.newInstance(0, "Page # 1");
                 return SubscribedFragment.newInstance(0, "Page # 1");
             case 1: // Fragment # 0 - This will show Popular Fragment
-                return new PopularFragment();
+                return new PopularFragment(context);
                 //return PopularFragment.newInstance(1, "Page # 2");
             default:
                 return null;

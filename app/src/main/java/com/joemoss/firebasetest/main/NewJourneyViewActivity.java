@@ -1,7 +1,6 @@
 package com.joemoss.firebasetest.main;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -21,47 +20,34 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Space;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.joemoss.firebasetest.Models.CurrentUser;
 import com.joemoss.firebasetest.Models.JourneyImageModel;
 import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
-import com.joemoss.firebasetest.profileviews.EditProfileViewActivity;
-
-import org.w3c.dom.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public class NewJourneyViewActivity extends AppCompatActivity {
 
     public final String APP_TAG = "Journey Tracker";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1002;
-    private File newJourneyImageFile;
+    private File newJourneyImageFile = null;
     private ImageView newJourneyImageThumbnail;
     private FloatingActionButton newJourneyImageButton;
     private FloatingActionButton postNewJourneyButton;
@@ -145,10 +131,11 @@ public class NewJourneyViewActivity extends AppCompatActivity {
                 .show();
     }
 
-    //Initialize new Journey model and upload to the Firestore Database. On Success, update the User's document with the post ID
+    //Initialize new Journey model and upload to the Firestore Database. On Success, check if journey has an image/video attatched and upload
     private void uploadJourney(){
 
         final String uid = fAuth.getCurrentUser().getUid();
+        Timestamp timestamp = Timestamp.now();
        // newJourneyImages.add(new JourneyImageModel("users/posts/"))
         EditText imageText = newJourneyImageView.findViewById(R.id.new_journey_image_text);
         EditText imageTitle = newJourneyImageView.findViewById(R.id.new_journey_image_title);
@@ -157,13 +144,18 @@ public class NewJourneyViewActivity extends AppCompatActivity {
 
         newJourney = new JourneyModel(newJourneyTitle.getText().toString(), uid, fAuth.getCurrentUser().getDisplayName(),
                 "users/"+uid+"/profilePic.jpg", newJourneyMainText.getText().toString(),
-                "", "", newJourneyTags.getText().toString(), newJourneyImages);
+                "", "", newJourneyTags.getText().toString(), newJourneyImages, 0, timestamp);
 
         firestore.collection("posts").add(newJourney)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                            updateUserDocument(documentReference.getId());
+//                            updateUserDocument(documentReference.getId());
+                        if(newJourneyImageFile != null) {
+                                uploadJourneyImages(documentReference.getId());
+                        }else{
+                            NewJourneyViewActivity.this.finish();
+                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -179,8 +171,8 @@ public class NewJourneyViewActivity extends AppCompatActivity {
         String uid = fAuth.getCurrentUser().getUid();
         WriteBatch batch = firestore.batch();
 
-        DocumentReference userRef =  firestore.collection("users").document(uid);
-        batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
+//        DocumentReference userRef =  firestore.collection("users").document(uid);
+//        batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
 
         if(newJourneyImageFile != null) {
             //Update the users post to include the future link to the images, based off of the posts documents IS

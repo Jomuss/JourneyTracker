@@ -21,6 +21,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
+import com.joemoss.firebasetest.adapters.PostsRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +39,13 @@ public class UserPostsFragment extends Fragment {
     FirebaseAuth fAuth;
     Context context;
     Query query;
+    View frag;
 
 
     public UserPostsFragment(Context context){
         this.context = context;
     }
-        View frag;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

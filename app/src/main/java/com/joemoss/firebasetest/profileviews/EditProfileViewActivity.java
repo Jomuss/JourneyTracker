@@ -98,7 +98,9 @@ public class EditProfileViewActivity extends AppCompatActivity {
         userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot snapshot) {
-                bioText.setText(snapshot.get("bio").toString());
+                if(snapshot.get("bio") != null) {
+                    bioText.setText(snapshot.get("bio").toString());
+                }
             }
         });
         bioText.addTextChangedListener(new TextWatcher() {
@@ -164,6 +166,10 @@ public class EditProfileViewActivity extends AppCompatActivity {
             if(dataChange) {
                 updateProfile();
             }
+            else{
+                EditProfileViewActivity.this.finish();
+            }
+
         }
         return super.onOptionsItemSelected(menuItem);
     }
@@ -206,9 +212,6 @@ public class EditProfileViewActivity extends AppCompatActivity {
     }
 
     private void updateProfile(){
-        if(!dataChange){
-
-        }else {
             DocumentReference docRef = firestore.collection("users").document(fauth.getCurrentUser().getUid());
             docRef.update("bio", bioText.getText().toString());
             if(profPic != null) {
@@ -216,7 +219,6 @@ public class EditProfileViewActivity extends AppCompatActivity {
             }else{
                 EditProfileViewActivity.this.finish();
             }
-        }
     }
 
     private void uploadPhoto(Bitmap profPic){
