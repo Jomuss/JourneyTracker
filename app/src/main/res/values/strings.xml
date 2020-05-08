@@ -28,4 +28,5 @@
     <string name="new_journy_text">New Journey</string>
     <string name="kudos_string">Kudos</string>
     <string name="follow_button_text">FOLLOW</string>
+    <string name="unfollow_button_text">UNFOLLOW</string>
 </resources>

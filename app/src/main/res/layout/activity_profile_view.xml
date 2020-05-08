@@ -7,15 +7,6 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".profileviews.ProfileViewActivity">
 
-<!--<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="wrap_content"-->
-<!--    android:id="@+id/profile_scroll_view">-->
-
-    <!--        tools:context=".profileviews.ProfileViewActivity">-->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
@@ -34,19 +25,6 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
-        <!--        <com.google.android.material.appbar.AppBarLayout-->
-<!--            android:id="@+id/appBarLayout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:theme="@style/AppTheme.AppBarOverlay"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent">-->
-
-
-
-<!--        </com.google.android.material.appbar.AppBarLayout>-->
-
 
         <ImageView
             android:id="@+id/profileProfPic"
@@ -58,7 +36,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_report_image" />
 
-        <!--            app:layout_constraintHorizontal_bias="1.0"-->
 
         <TextView
             android:id="@+id/profileUsername"
@@ -82,13 +59,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profile_bio_text"
             app:tabBackground="?attr/colorPrimary" />
-
-<!--        <androidx.core.widget.NestedScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="200dp"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/profile_tabs"-->
-<!--            app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/profile_viewpager"
@@ -124,7 +94,7 @@
             app:layout_constraintTop_toBottomOf="@+id/profile_toolbar" />
 
         <Button
-            android:id="@+id/follow_unfollow_button"
+            android:id="@+id/follow_button"
             android:layout_width="86dp"
             android:layout_height="37dp"
             android:layout_marginTop="17dp"
@@ -133,7 +103,20 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profile_toolbar"
-            android:background="@drawable/follow_unfollow_button"/>
+            android:background="@drawable/follow_button"/>
+
+        <Button
+            android:id="@+id/unfollow_button"
+            android:layout_width="86dp"
+            android:layout_height="37dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="56dp"
+            android:background="@drawable/unfollow_button"
+            android:text="@string/unfollow_button_text"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_toolbar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

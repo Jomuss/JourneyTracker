@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.joemoss.firebasetest.GlideApp;
@@ -15,6 +19,8 @@ import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
 import com.joemoss.firebasetest.adapters.PostsRecyclerViewAdapter;
 import com.joemoss.firebasetest.profileviews.ProfileViewActivity;
+
+import java.util.Objects;
 
 public class JourneyViewActivity extends AppCompatActivity {
 
@@ -24,6 +30,7 @@ public class JourneyViewActivity extends AppCompatActivity {
     TextView journeyMainText;
     ImageView authorProfPic;
     FirebaseStorage storage;
+    FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +38,35 @@ public class JourneyViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journey_view);
 
         storage = FirebaseStorage.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
         Intent i = getIntent();
-        final JourneyModel journey = (JourneyModel) i.getParcelableExtra(PostsRecyclerViewAdapter.JOURNEYDATA);
+        String source = i.getStringExtra(PostsRecyclerViewAdapter.JOURNEYSOURCE);
+        if(source.equals("0")){
+            final JourneyModel journey = (JourneyModel) i.getParcelableExtra(PostsRecyclerViewAdapter.JOURNEYDATA);
+            initJourney(journey);
+        }
+        else{
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            final String journeyID = i.getStringExtra(PostsRecyclerViewAdapter.JOURNEYDATA);
+            firestore.collection("posts").document(journeyID).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            final JourneyModel journey = documentSnapshot.toObject(JourneyModel.class);
+                            initJourney(journey);
+                        }
+                    });
+        }
 
+
+
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+
+    }
+
+    private void initJourney(final JourneyModel journey){
         journeyTitle = findViewById(R.id.journey_title);
         journeyTitle.setText(journey.getTitle());
         journeyAuthor = findViewById(R.id.journey_author_username);
@@ -60,5 +90,16 @@ public class JourneyViewActivity extends AppCompatActivity {
                 startActivity(profIntent);
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

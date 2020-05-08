@@ -20,6 +20,8 @@ public class JourneyModel implements Parcelable {
     private List<JourneyImageModel> journeyImages;
     private int journeyKudos;
     private Timestamp timestamp;
+    private String journeyID;
+    private int voteStatus;
     
 
     public JourneyModel(){
@@ -50,6 +52,7 @@ public class JourneyModel implements Parcelable {
         prevJourneyRef = in.readString();
         journeyTags = in.readString();
         journeyKudos = in.readInt();
+        journeyID = in.readString();
     }
 
     public static final Creator<JourneyModel> CREATOR = new Creator<JourneyModel>() {
@@ -155,6 +158,7 @@ public class JourneyModel implements Parcelable {
         dest.writeString(prevJourneyRef);
         dest.writeString(journeyTags);
         dest.writeInt(journeyKudos);
+        dest.writeString(journeyID.toString());
     }
 
     public Timestamp getTimestamp() {
@@ -163,5 +167,21 @@ public class JourneyModel implements Parcelable {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getJourneyID() {
+        return journeyID;
+    }
+
+    public void setJourneyID(String journeyID) {
+        this.journeyID = journeyID;
+    }
+
+    public int getVoteStatus() {
+        return voteStatus;
+    }
+
+    public void setVoteStatus(int voted) {
+        this.voteStatus = voted;
     }
 }

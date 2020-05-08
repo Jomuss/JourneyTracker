@@ -17,7 +17,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".main.JourneyViewActivity"></activity>
+        <activity android:name=".main.SearchViewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.joemoss.firebasetest.main.MainViewActivity" />
+        </activity>
+
+        <activity android:name=".main.JourneyViewActivity" />
         <activity android:name=".profileviews.EditProfileViewActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -33,9 +40,7 @@
             android:label="@string/title_activity_profile_view"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.joemoss.firebasetest.main.MainViewActivity" />
+
         </activity>
         <activity
             android:name=".main.MainViewActivity"

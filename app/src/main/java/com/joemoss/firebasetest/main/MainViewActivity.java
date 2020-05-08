@@ -4,28 +4,29 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.transition.Slide;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 import com.joemoss.firebasetest.GlideApp;
 import com.joemoss.firebasetest.Models.CurrentUser;
 import com.joemoss.firebasetest.R;
+import com.joemoss.firebasetest.journeySearch.SearchJourneyFragment;
 import com.joemoss.firebasetest.profileviews.ProfileViewActivity;
 import com.joemoss.firebasetest.startscreens.SplashScreenActivity;
 
@@ -42,7 +44,6 @@ public class MainViewActivity extends AppCompatActivity {
     FirebaseStorage storage;
     FirebaseFirestore firestore;
     FirebaseAuth fAuth;
-
 
 
     @Override
@@ -58,6 +59,7 @@ public class MainViewActivity extends AppCompatActivity {
         CurrentUser.getInstance().intializeUser(FirebaseAuth.getInstance().getCurrentUser());
         storage = FirebaseStorage.getInstance();
         fAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
         //Initialize ViewPager
         ViewPager viewPager = findViewById(R.id.main_view_pager);
@@ -100,6 +102,15 @@ public class MainViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 newJourney();
+            }
+        });
+
+        SearchView journeySearch = findViewById(R.id.searchView);
+        journeySearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView();
+
             }
         });
 
@@ -165,6 +176,11 @@ public class MainViewActivity extends AppCompatActivity {
     private void newJourney(){
         Intent newJourneyIntent = new Intent(this, NewJourneyViewActivity.class);
         startActivity(newJourneyIntent);
+    }
+    private void searchView(){
+        Intent intent = new Intent(this, SearchViewActivity.class);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, findViewById(R.id.searchView), "search");
+        startActivity(intent, options.toBundle());
     }
     //Logs User out and kicks user to splash screen
     private void logOut(){

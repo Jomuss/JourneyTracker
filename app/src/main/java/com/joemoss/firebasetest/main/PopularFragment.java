@@ -20,6 +20,8 @@ import com.joemoss.firebasetest.R;
 import com.joemoss.firebasetest.adapters.PostsRecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class PopularFragment extends Fragment {
@@ -53,7 +55,9 @@ public class PopularFragment extends Fragment {
         postsRecyclerView.setLayoutManager(layoutManager);
 
         final CollectionReference postsRef = firestore.collection("posts");
-        query = postsRef.orderBy("timestamp", Query.Direction.DESCENDING);
+//        Calendar cal = Calendar.getInstance();
+//        cal.add(Calendar.DATE, -1);
+        query = postsRef.orderBy("timestamp", Query.Direction.DESCENDING).orderBy("journeyKudos", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<JourneyModel> options = new FirestoreRecyclerOptions.Builder<JourneyModel>()
                 .setQuery(query, JourneyModel.class)

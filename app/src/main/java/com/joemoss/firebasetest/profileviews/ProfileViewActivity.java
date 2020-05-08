@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,6 +39,7 @@ import com.joemoss.firebasetest.Models.JourneyModel;
 import com.joemoss.firebasetest.R;
 import com.joemoss.firebasetest.adapters.PostsRecyclerViewAdapter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +55,9 @@ public class ProfileViewActivity extends AppCompatActivity {
     private PostsRecyclerViewAdapter postsAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private boolean showEditMenu = true;
+    Button followButton;
+    Button unfollowButton;
+    String profileUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +73,17 @@ public class ProfileViewActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        if(getIntent().getStringExtra("UID").equals(fAuth.getCurrentUser().getUid())){
-            findViewById(R.id.follow_unfollow_button).setVisibility(View.INVISIBLE);
+        followButton = findViewById(R.id.follow_button);
+        unfollowButton = findViewById(R.id.unfollow_button);
+
+
+        profileUID = getIntent().getStringExtra("UID");
+        if(profileUID.equals(fAuth.getCurrentUser().getUid())){
+            followButton.setVisibility(View.INVISIBLE);
+            unfollowButton.setVisibility(View.INVISIBLE);
         }else{
             showEditMenu = false;
+            checkFollowStatus();
         }
 
         //Initialize ViewPager
@@ -112,11 +125,16 @@ public class ProfileViewActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.edit_profile_button) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+            case R.id.edit_profile_button:
                 EditProfile();
         }
-        return super.onOptionsItemSelected(menuItem);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -172,22 +190,67 @@ public class ProfileViewActivity extends AppCompatActivity {
         });
     }
 
-//    private void intializeRecyclerView(){
-//        firestore.collection("posts")
-//                .whereEqualTo("authorUID", fAuth.getCurrentUser().getUid())
-//                .get()
-//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        journeys = queryDocumentSnapshots.toObjects(JourneyModel.class);
-//                    }
-//                });
-//        postsRecyclerView = findViewById(R.id.user_posts_recycler_view);
-//        postsAdapter = new PostsRecyclerViewAdapter(this, journeys);
-//        layoutManager = new LinearLayoutManager(ProfileViewActivity.this);
-//        postsRecyclerView.setLayoutManager(layoutManager);
-//        postsRecyclerView.setAdapter(postsAdapter);
-//    }
+    //Check to see if you (the current user) are following the user profile you are viewing
+    private void checkFollowStatus(){
+        DocumentReference followersDocRef = firestore.collection("followers").document(profileUID);
+        followersDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                ArrayList<String> followers = (ArrayList<String>) snapshot.get("followers");
+                if(followers.contains(fAuth.getCurrentUser().getUid())){
+                    unfollowButton.setVisibility(View.VISIBLE);
+                    followButton.setVisibility(View.INVISIBLE);
+
+                }
+                else{
+                    followButton.setVisibility(View.VISIBLE);
+                    unfollowButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                followUser();
+
+            }
+        });
+        unfollowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                unfollowUser();
+
+            }
+        });
+    }
+
+    private void followUser(){
+        DocumentReference followersDocRef = firestore.collection("followers").document(profileUID);
+        followersDocRef.update("followers", FieldValue.arrayUnion(fAuth.getCurrentUser().getUid()))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        unfollowButton.setVisibility(View.VISIBLE);
+                        followButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+    }
+
+    private void unfollowUser(){
+        DocumentReference followersDocRef = firestore.collection("followers").document(profileUID);
+        followersDocRef.update("followers", FieldValue.arrayRemove(fAuth.getCurrentUser().getUid()))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        followButton.setVisibility(View.VISIBLE);
+                        unfollowButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+    }
+
+
 
 
 }
