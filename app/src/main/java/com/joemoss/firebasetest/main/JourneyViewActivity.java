@@ -29,6 +29,8 @@ public class JourneyViewActivity extends AppCompatActivity {
     TextView journeyKudos;
     TextView journeyMainText;
     ImageView authorProfPic;
+    ImageView journeyImage;
+    TextView imageTitle;
     FirebaseStorage storage;
     FirebaseFirestore firestore;
 
@@ -75,12 +77,21 @@ public class JourneyViewActivity extends AppCompatActivity {
         journeyKudos.setText(Integer.toString(journey.getJourneyKudos()));
         journeyMainText = findViewById(R.id.journey_main_text);
         journeyMainText.setText(journey.getMainJourneyText());
+        imageTitle = findViewById(R.id.journey_image_title);
+        imageTitle.setText(journey.getJourneyImages().get(0).getImageTitle());
         authorProfPic = findViewById(R.id.journey_view_prof_pic);
         StorageReference profPic = storage.getReference(journey.getAuthorProfPicRef());
         GlideApp.with(this)
                 .load(profPic)
                 .circleCrop()
                 .into(authorProfPic);
+        journeyImage = findViewById(R.id.journey_image);
+//        System.out.println(journey.getJourneyImages());
+        StorageReference journeyPic = storage.getReference(journey.getJourneyImages().get(0).getPictureRef());
+
+        GlideApp.with(this)
+                .load(journeyPic)
+                .into(journeyImage);
 
         journeyAuthor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +101,7 @@ public class JourneyViewActivity extends AppCompatActivity {
                 startActivity(profIntent);
             }
         });
+
     }
 
     @Override

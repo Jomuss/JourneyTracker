@@ -1,6 +1,9 @@
 package com.joemoss.firebasetest.Models;
 
-public class JourneyImageModel{
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class JourneyImageModel implements Parcelable {
     private String pictureRef;
     private String imageText;
     private String imageTitle;
@@ -14,6 +17,24 @@ public class JourneyImageModel{
         this.imageText = imageText;
         this.imageTitle = imageTitle;
     }
+
+    protected JourneyImageModel(Parcel in) {
+        pictureRef = in.readString();
+        imageText = in.readString();
+        imageTitle = in.readString();
+    }
+
+    public static final Creator<JourneyImageModel> CREATOR = new Creator<JourneyImageModel>() {
+        @Override
+        public JourneyImageModel createFromParcel(Parcel in) {
+            return new JourneyImageModel(in);
+        }
+
+        @Override
+        public JourneyImageModel[] newArray(int size) {
+            return new JourneyImageModel[size];
+        }
+    };
 
     public String getPictureRef() {
         return pictureRef;
@@ -37,5 +58,17 @@ public class JourneyImageModel{
 
     public void setImageTitle(String imageTitle) {
         this.imageTitle = imageTitle;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(pictureRef);
+        dest.writeString(imageText);
+        dest.writeString(imageTitle);
     }
 }

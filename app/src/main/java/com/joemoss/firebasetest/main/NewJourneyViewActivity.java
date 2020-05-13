@@ -167,35 +167,35 @@ public class NewJourneyViewActivity extends AppCompatActivity {
     }
 
     //Update the "posts" array of the userdocument with the ID of the new Post, as well as the post with the
-    private void updateUserDocument(final String journeyDocRef){
-        String uid = fAuth.getCurrentUser().getUid();
-        WriteBatch batch = firestore.batch();
-
-//        DocumentReference userRef =  firestore.collection("users").document(uid);
-//        batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
-
-        if(newJourneyImageFile != null) {
-            //Update the users post to include the future link to the images, based off of the posts documents IS
-            newJourney.getJourneyImages().get(0).setPictureRef("users/" + uid + "/posts/" + journeyDocRef + "/image" + (imageCounter) + ".jpg");
-            DocumentReference postRef = firestore.collection("posts").document(journeyDocRef);
-            batch.update(postRef, "journeyImages", newJourney.getJourneyImages());
-        }
-
-        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                if(newJourneyImageFile != null) {
-                    uploadJourneyImages(journeyDocRef);
-                }else{
-                    NewJourneyViewActivity.this.finish();
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
+//    private void updateUserDocument(final String journeyDocRef){
+//        String uid = fAuth.getCurrentUser().getUid();
+//        WriteBatch batch = firestore.batch();
+//
+////        DocumentReference userRef =  firestore.collection("users").document(uid);
+////        batch.update(userRef, "posts", FieldValue.arrayUnion("posts/"+journeyDocRef));
+//
+//        if(newJourneyImageFile != null) {
+//            //Update the users post to include the future link to the images, based off of the posts documents IS
+//            newJourney.getJourneyImages().get(0).setPictureRef("users/" + uid + "/posts/" + journeyDocRef + "/image/" + (imageCounter) + ".jpg");
+//            DocumentReference postRef = firestore.collection("posts").document(journeyDocRef);
+//            batch.update(postRef, "journeyImages", newJourney.getJourneyImages());
+//        }
+//
+//        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                if(newJourneyImageFile != null) {
+//                    uploadJourneyImages(journeyDocRef);
+//                }else{
+//                    NewJourneyViewActivity.this.finish();
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//
+//            }
+//        });
 
 //        firestore.collection("users").document(CurrentUser.getInstance().currentUser.getUid())
 //                .update("posts", FieldValue.arrayUnion(docRef))
@@ -211,7 +211,7 @@ public class NewJourneyViewActivity extends AppCompatActivity {
 //                    }
 //                });
 
-    }
+//    }
 
     //Uploads images tied to the journey
     private void uploadJourneyImages(final String docRef){

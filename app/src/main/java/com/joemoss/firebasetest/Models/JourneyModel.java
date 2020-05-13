@@ -53,6 +53,8 @@ public class JourneyModel implements Parcelable {
         journeyTags = in.readString();
         journeyKudos = in.readInt();
         journeyID = in.readString();
+        journeyImages = in.createTypedArrayList(JourneyImageModel.CREATOR);
+//        journeyImages = in.readList(journeyImages, JourneyImageModel.class.getClassLoader());
     }
 
     public static final Creator<JourneyModel> CREATOR = new Creator<JourneyModel>() {
@@ -159,6 +161,7 @@ public class JourneyModel implements Parcelable {
         dest.writeString(journeyTags);
         dest.writeInt(journeyKudos);
         dest.writeString(journeyID.toString());
+        dest.writeTypedList(journeyImages);
     }
 
     public Timestamp getTimestamp() {
